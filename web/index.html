@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#3b1f4a">
+<title>Daybook</title>
+<meta name="description" content="A private daily journal. Write a few lines each day and see what you wrote on this day in earlier years. Stored only in your browser.">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<div id="lock" class="lock" hidden>
+  <form id="lock-form" class="lock-card" autocomplete="off">
+    <h1>Daybook</h1>
+    <p class="muted">This journal is locked.</p>
+    <label for="lock-pass">Passphrase</label>
+    <input id="lock-pass" type="password" autocomplete="current-password">
+    <p id="lock-err" class="err" role="alert"></p>
+    <button class="primary" type="submit">Unlock</button>
+  </form>
+</div>
+
+<div id="app" hidden>
+<header class="top">
+  <div class="brand"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h12a2 2 0 0 1 2 2v16H7a2 2 0 0 1-2-2z" fill="currentColor"/><path d="M5 17a2 2 0 0 1 2-2h12v6H7a2 2 0 0 1-2-2z" fill="var(--accent)"/></svg><span>Daybook</span></div>
+  <p class="privacy">Saved only in this browser. Nothing is sent anywhere.</p>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button role="tab" id="tab-write" aria-controls="panel-write" aria-selected="true">Write</button>
+  <button role="tab" id="tab-look" aria-controls="panel-look" aria-selected="false" tabindex="-1">Look back</button>
+  <button role="tab" id="tab-trends" aria-controls="panel-trends" aria-selected="false" tabindex="-1">Trends</button>
+  <button role="tab" id="tab-settings" aria-controls="panel-settings" aria-selected="false" tabindex="-1">Settings</button>
+</nav>
+
+<main id="main">
+  <section id="panel-write" role="tabpanel" aria-labelledby="tab-write">
+    <div class="datebar">
+      <button id="prev-day" class="ghost" type="button" aria-label="Previous day">&lsaquo;</button>
+      <div class="datebar-mid">
+        <h1 id="date-title"></h1>
+        <p id="date-sub" class="muted small"></p>
+      </div>
+      <button id="next-day" class="ghost" type="button" aria-label="Next day">&rsaquo;</button>
+    </div>
+    <label for="entry" class="sr">Your entry</label>
+    <textarea id="entry" rows="12" placeholder="How was your day?" spellcheck="true"></textarea>
+    <div class="entry-foot">
+      <span id="count" class="muted small"></span>
+      <span id="saved" class="muted small" role="status" aria-live="polite"></span>
+      <button id="today-btn" class="ghost" type="button" hidden>Back to today</button>
+    </div>
+    <p id="streak" class="streak"></p>
+    <div id="memories" class="memories"></div>
+  </section>
+
+  <section id="panel-look" role="tabpanel" aria-labelledby="tab-look" hidden>
+    <div class="cal-head">
+      <button id="cal-prev" class="ghost" type="button" aria-label="Previous month">&lsaquo;</button>
+      <h2 id="cal-title"></h2>
+      <button id="cal-next" class="ghost" type="button" aria-label="Next month">&rsaquo;</button>
+    </div>
+    <table class="cal" id="cal" aria-label="Days with entries"></table>
+    <h2 class="sec">Search your entries</h2>
+    <label for="q" class="sr">Search</label>
+    <input id="q" type="search" placeholder="Search words, e.g. beach mira" autocomplete="off">
+    <div id="results" class="results" aria-live="polite"></div>
+  </section>
+
+  <section id="panel-trends" role="tabpanel" aria-labelledby="tab-trends" hidden>
+    <div id="trends"></div>
+  </section>
+
+  <section id="panel-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
+    <h2 class="sec first">Your writing, your copy</h2>
+    <p class="muted">Download everything any time. JSON is for backups and moving to another device. Plain text opens in any editor.</p>
+    <div class="row">
+      <button id="exp-json" type="button">Download JSON</button>
+      <button id="exp-text" type="button">Download plain text</button>
+    </div>
+
+    <h2 class="sec">Bring entries in</h2>
+    <p class="muted">Choose a Daybook JSON backup, or a text file where each entry starts with a line that is just a date (2024-03-05, 5 March 2024 or 05/03/2024).</p>
+    <div class="row">
+      <label for="imp-mode" class="inline">If a day already has an entry</label>
+      <select id="imp-mode"><option value="keep">keep mine</option><option value="append">add the imported text below mine</option></select>
+    </div>
+    <div class="row"><input id="imp-file" type="file" accept=".json,.txt,.md,text/plain,application/json" aria-label="Choose a file to import"></div>
+    <p id="imp-msg" class="msg" role="status"></p>
+
+    <h2 class="sec">Daily reminder</h2>
+    <p class="muted">A browser page cannot ring your phone by itself. This makes a calendar file that repeats every day; open it and your phone's calendar does the reminding.</p>
+    <div class="row">
+      <label for="rem-time" class="inline">Time</label>
+      <input id="rem-time" type="time" value="21:00">
+      <button id="rem-btn" type="button">Download reminder</button>
+    </div>
+
+    <h2 class="sec">Passphrase lock</h2>
+    <p class="muted">Encrypts the journal in this browser. If you forget the passphrase, nobody can recover it, including the author. Keep a JSON backup.</p>
+    <div id="lock-ui"></div>
+
+    <h2 class="sec">Clear everything</h2>
+    <p class="muted">Deletes the journal from this browser. Download a backup first.</p>
+    <div class="row"><button id="wipe" class="danger" type="button">Delete all entries</button></div>
+    <p id="wipe-msg" class="msg" role="status"></p>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>Daybook is a free rebuild of OhLife, the email journal that closed in 2014. It does not read email, so you open the page to write. Text only, no photos.</p>
+</footer>
+</div>
+<script src="app.js" type="module"></script>
+</body>
+</html>
