@@ -4,7 +4,7 @@ A private daily journal. Write a few lines each day, and Daybook shows you what 
 
 A student rebuild of the idea behind **OhLife**, the email journal that closed in October 2014. OhLife emailed you every evening ("How was your day?"), your reply became that day's entry, and each email included the entry from a year earlier. Others have since built their own replacements. Daybook keeps the writing and the look-back and drops the email, because reading and replying to mail needs a server and access to your inbox.
 
-**Live demo:** https://jay-m007.github.io/daybook/ (once published)
+**Live demo:** https://jay-m007.github.io/daybook/
 
 ![Writing, with older entries underneath](docs/write-desktop.png)
 
